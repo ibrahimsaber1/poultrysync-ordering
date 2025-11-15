@@ -14,17 +14,22 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from products.views import ProductListView, ProductDeleteView, index_view
-from orders.views import OrderCreateView, OrderExportView
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+from products.views import index_view
+from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', index_view, name='index'),
+    path('logout/', LogoutView.as_view(next_page='index'), name='logout'),
     
-    # API endpoints
-    path('api/products/', ProductListView.as_view(), name='product-list'),
-    path('api/products/delete/', ProductDeleteView.as_view(), name='product-delete'),
-    path('api/orders/', OrderCreateView.as_view(), name='order-create'),
-    path('api/orders/export/', OrderExportView.as_view(), name='order-export'),
+    path('products/', include('products.urls')),
+    path('orders/', include('orders.urls')),
 ]
+
+# Serve static files in development
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0] if settings.STATICFILES_DIRS else settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
