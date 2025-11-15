@@ -20,13 +20,21 @@ from django.conf.urls.static import static
 from products.views import index_view
 from django.contrib.auth.views import LogoutView
 from products.views import index_view, create_product
+from orders.views import create_order, export_orders
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('logout/', LogoutView.as_view(next_page='index'), name='logout'),
     
+    # ===== HTML Pages =====
     path('', index_view, name='index'),
     path('products/create/', create_product, name='create_product'),
+    path('orders/create/', create_order, name='create_order'), 
+    path('orders/export/', export_orders, name='export_orders'),
+    
+    # ===== API Endpoints =====
     path('api/products/', include('products.urls')),
     path('api/orders/', include('orders.urls')),
+    
+    # ===== Authentication =====
+    path('logout/', LogoutView.as_view(next_page='index'), name='logout'),
 ]

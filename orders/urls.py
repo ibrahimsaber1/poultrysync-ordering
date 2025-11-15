@@ -1,11 +1,9 @@
 from django.urls import path
-from . import views
+from .views import OrderCreateAPIView, OrderExportAPIView
 
 app_name = 'orders'
 
 urlpatterns = [
-    path('create/', views.order_create_page, name='create'),
-    
-    path('api/create/', views.OrderCreateAPIView.as_view(), name='api-create'),
-    path('api/export/', views.OrderExportAPIView.as_view(), name='export'),
+    path('', OrderCreateAPIView.as_view(), name='api-create'),
+    path('export/', OrderExportAPIView.as_view(), name='api-export'),
 ]
