@@ -25,3 +25,23 @@ class Order(models.Model):
     
     created_at = models.DateTimeField(auto_now_add=True)
     shipped_at = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Order #{self.id} - {self.product.name} - (x{self.quantity}) "
+    
+    @property
+    def company(self):
+        return self.created_by.company if self.created_by else None
+    
+    def clean(self):
+        if self.product and not self.product.is_active:
+            raise ValidationError(
+                f"Error,low stock amount. Available: {self.product.stock}"
+            )
+    
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args,**kwargs)
