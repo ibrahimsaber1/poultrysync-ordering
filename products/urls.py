@@ -4,6 +4,6 @@ from . import views
 app_name = 'products'
 
 urlpatterns = [
-    path('api/', views.ProductListView.as_view(), name='api-list'),
-    path('api/delete/', views.ProductDeleteView.as_view(), name='api-delete'),
+    path('', views.ProductListAPIView.as_view(), name='list'),
+    path('delete/', views.ProductBulkDeleteAPIView.as_view(), name='bulk-delete'),
 ]
