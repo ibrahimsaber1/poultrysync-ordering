@@ -1,0 +1,196 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PoultrySync - Multi-Tenant Ordering System</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <img src="{% static 'images/poultry-sync-logo.svg' %}" alt="PoultrySync Logo" style="width: 8rem">
+            <h1>Ordering System</h1>
+            {% if user.is_authenticated %}
+                <div class="user-info">
+                    {{ user.username }} ({{ user.company.name }})
+                    <span class="role-badge role-{{ user.role }}">{{ user.get_role_display }}</span>
+                    | 
+                    <a href="/admin/">Admin Panel</a>
+                    <a href="{% url 'logout' %}">Logout</a>
+                </div>
+            {% else %}
+                <div>
+                    <a href="/admin/login/">Login</a>
+                </div>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="container">
+        {% if user.is_authenticated %}
+            <!-- Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Product Creation Form -->
+            <div class="card">
+                <h2>Create New Product</h2>
+                
+                <form method="post" action="{% url 'create_product' %}">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="name">Product Name *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="price">Price ($) *</label>
+                            <input type="number" id="price" name="price" step="0.01" min="0" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="stock">Stock Quantity *</label>
+                            <input type="number" id="stock" name="stock" min="0" required>
+                        </div>
+                    </div>
+
+                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 1rem;">
+                        <strong>Auto-filled:</strong> Company ({{ user.company.name }}), 
+                        Created by ({{ user.username }}), 
+                        Timestamp ({{ now|date:"Y-m-d H:i:s" }})
+                    </p>
+
+                    <button type="submit" class="btn btn-primary">Add Product</button>
+                </form>
+            </div>
+
+            <!-- Order Creation Form (admin & operator only) -->
+            {% if user.role != 'viewer' %}
+            <div class="card">
+                <h2>Create New Order</h2>
+                
+                <form method="post" action="{% url 'create_order' %}">
+                    {% csrf_token %}
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="product">Select Product *</label>
+                            <select id="product" name="product" required onchange="updateStockInfo()">
+                                <option value="">-- Select a product --</option>
+                                {% for product in products %}
+                                    {% if product.is_active and product.stock > 0 %}
+                                    <option value="{{ product.id }}" data-stock="{{ product.stock }}" data-price="{{ product.price }}">
+                                        {{ product.name }} (Stock: {{ product.stock }}, Price: ${{ product.price }})
+                                    </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="quantity">Quantity *</label>
+                            <input type="number" id="quantity" name="quantity" min="1" required>
+                            <small id="stock-warning" style="color: #C62828; display: none;">
+                                Exceeds available stock!
+                            </small>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Place Order</button>
+                    <a href="{% url 'export_orders' %}" class="btn btn-secondary">Export Orders CSV</a>
+                </form>
+            </div>
+            {% endif %}
+
+            <!-- Products Table -->
+            <div class="card">
+                <h2>Products List</h2>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                            <th>Created By</th>
+                            <th>Created At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td>{{ product.id }}</td>
+                            <td>{{ product.name }}</td>
+                            <td>${{ product.price }}</td>
+                            <td>{{ product.stock }}</td>
+                            <td>
+                                {% if product.is_active %}
+                                    <span class="badge badge-active">Active</span>
+                                {% else %}
+                                    <span class="badge badge-inactive">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ product.created_by.username }}</td>
+                            <td>{{ product.created_at|date:"Y-m-d H:i" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 2rem; color: #999;">
+                                No products yet. Add your first product above!
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        {% else %}
+            <div class="card" style="text-align: center; padding: 3rem;">
+                <h2>Welcome to PoultrySync</h2>
+                <p style="margin: 1.5rem 0; color: #666; font-size: 1.1rem;">
+                    Multi-Tenant Ordering System for Poultry Production
+                </p>
+                <a href="/admin/login/?next=/" class="btn btn-primary">Login to Continue</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <footer>
+        <p>&copy; 2025 PoultrySync. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Stock validation
+        function updateStockInfo() {
+            const select = document.getElementById('product');
+            const quantityInput = document.getElementById('quantity');
+            const warning = document.getElementById('stock-warning');
+            
+            if (select.value) {
+                const stock = parseInt(select.options[select.selectedIndex].dataset.stock);
+                quantityInput.max = stock;
+                
+                quantityInput.addEventListener('input', function() {
+                    if (parseInt(this.value) > stock) {
+                        warning.style.display = 'block';
+                    } else {
+                        warning.style.display = 'none';
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
