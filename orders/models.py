@@ -15,13 +15,14 @@ class Order(models.Model):
                                 on_delete=models.CASCADE,
                                 related_name='orders')
     
-    quantity = models.PositiveBigIntegerField()
+    quantity = models.PositiveIntegerField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES,
                               default='pending')
     
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL,
-                                   on_delete= models.SET_NULL,
-                                   related_name='created_orders')
+                                    on_delete=models.SET_NULL,
+                                    null=True,
+                                    related_name='created_orders')
     
     created_at = models.DateTimeField(auto_now_add=True)
     shipped_at = models.DateTimeField(null=True, blank=True)
@@ -30,7 +31,7 @@ class Order(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"Order #{self.id} - {self.product.name} - (x{self.quantity}) "
+        return f"Order #{self.id} - {self.product.name} - (x{self.quantity})"
     
     @property
     def company(self):
@@ -38,10 +39,13 @@ class Order(models.Model):
     
     def clean(self):
         if self.product and not self.product.is_active:
+            raise ValidationError("Cannot order inactive products.")
+        
+        if self.product and self.quantity > self.product.stock:
             raise ValidationError(
-                f"Error,low stock amount. Available: {self.product.stock}"
+                f"Insufficient stock. Available: {self.product.stock}"
             )
     
     def save(self, *args, **kwargs):
         self.full_clean()
-        super().save(*args,**kwargs)
+        super().save(*args, **kwargs)
