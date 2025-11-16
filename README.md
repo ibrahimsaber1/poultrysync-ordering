@@ -1,7 +1,8 @@
 ﻿# PoultrySync - Multi-Tenant Ordering System
 
 A Django-based multi-tenant application for managing orders and products across multiple companies with role-based access control and data isolation.
-[u can see the site directly here](https://ibrahim.pythonanywhere.com/)
+[see demo](https://ibrahim.pythonanywhere.com/)
+[see docs](https://docs-poultrysync-ordering.netlify.app/)
 
 <img width="714" height="703" alt="image" src="https://github.com/user-attachments/assets/e95cb881-ce75-4dd4-8634-bf4a3da855ac" />
 
@@ -92,6 +93,7 @@ After loading demo data, use these credentials:
 
 **Company 2: Golden Egg Productions**
 - Admin: `admin2` / `admin123`
+
 
 
 
