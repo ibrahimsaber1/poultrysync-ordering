@@ -31,7 +31,7 @@ cd poultrysync-ordering
 
 ### 2. Configure Environment Variables
 
-Add the `.env` file with the credentials sent to u via email it :
+Add the `.env` file with the credentials sent to u via email :
 
 ```env
 DB_NAME=your_database_name
@@ -41,6 +41,7 @@ DB_HOST=your-host
 DB_PORT=12345
 SECRET_KEY=your-secret-key
 DEBUG=False
+ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
 ```
 
 ### 3. Build Docker Image
@@ -49,14 +50,15 @@ DEBUG=False
 docker-compose build
 ```
 
-### 4. Run Database Migrations
+### 4. Run Database Migrations (you can skip this step if u are using the deployed db from the .env file)
 
 ```bash
+docker-compose run --rm web python manage.py makemigrations
 docker-compose run --rm web python manage.py migrate
 ```
 
 ### 5. Create Superuser (if u want to)
- >> note: u will find a super user username and password on the email as well . 
+ > note: u will find a super user username and password in the email I sent to u as well. 
 
 ```bash
 docker-compose run --rm web python manage.py createsuperuser
@@ -89,5 +91,6 @@ After loading demo data, use these credentials:
 
 **Company 2: Golden Egg Productions**
 - Admin: `admin2` / `admin123`
+
 
 
