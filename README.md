@@ -2,6 +2,9 @@
 
 A Django-based multi-tenant application for managing orders and products across multiple companies with role-based access control and data isolation.
 
+<img width="714" height="703" alt="image" src="https://github.com/user-attachments/assets/e95cb881-ce75-4dd4-8634-bf4a3da855ac" />
+
+
 ## Tech Stack
 
 - Python 3.10.10
@@ -86,4 +89,5 @@ After loading demo data, use these credentials:
 
 **Company 2: Golden Egg Productions**
 - Admin: `admin2` / `admin123`
+
 
