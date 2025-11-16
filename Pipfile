@@ -10,6 +10,8 @@ django-cors-headers = "*"
 openpyxl = "*"
 python-dotenv = "==1.0.1"
 djangorestframework = "==3.14.0"
+gunicorn = "*"
+whitenoise = "*"
 
 [dev-packages]
 
