@@ -38,10 +38,10 @@ class Order(models.Model):
         return self.created_by.company if self.created_by else None
     
     def clean(self):
-        if self.product and not self.product.is_active:
+        if self.product and not self.product.is_active: # checking the if the product is active
             raise ValidationError("Cannot order inactive products.")
         
-        if self.product and self.quantity > self.product.stock:
+        if self.product and self.quantity > self.product.stock: # checking the if the quantity is available
             raise ValidationError(
                 f"Insufficient stock. Available: {self.product.stock}"
             )

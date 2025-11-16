@@ -2,7 +2,7 @@
 
 A Django-based multi-tenant application for managing orders and products across multiple companies with role-based access control and data isolation.
 [see demo](https://ibrahim.pythonanywhere.com/)
-[see docs](https://docs-poultrysync-ordering.netlify.app/)
+<!-- [see docs](https://docs-poultrysync-ordering.netlify.app/) -->
 
 <img width="714" height="703" alt="image" src="https://github.com/user-attachments/assets/e95cb881-ce75-4dd4-8634-bf4a3da855ac" />
 
