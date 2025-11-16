@@ -34,6 +34,9 @@ def index_view(request):
 def create_product(request):
     """Handle product creation from form"""
     if request.method == 'POST':
+        if request.user.role == 'viewer':
+            messages.error(request, 'Viewers cannot add products.')
+            return redirect('index')
         try:
             name = request.POST.get('name')
             price = request.POST.get('price')
