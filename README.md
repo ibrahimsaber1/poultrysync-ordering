@@ -7,7 +7,7 @@ A Django-based multi-tenant application for managing orders and products across 
 <img width="714" height="703" alt="image" src="https://github.com/user-attachments/assets/e95cb881-ce75-4dd4-8634-bf4a3da855ac" />
 
 
-## Tech Stack
+## Tech Stack 
 
 - Python 3.10.10
 - Django 4.1.13
@@ -93,6 +93,7 @@ After loading demo data, use these credentials:
 
 **Company 2: Golden Egg Productions**
 - Admin: `admin2` / `admin123`
+
 
 
 
